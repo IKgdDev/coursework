@@ -1,3 +1,5 @@
+package Basket;
+
 public class Product {
     private String title;
     private String category;
