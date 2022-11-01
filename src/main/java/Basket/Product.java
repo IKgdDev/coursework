@@ -15,11 +15,14 @@ public class Product {
         this.category = category;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public String getCategory() {
         return category;
+    }
+
+    public String getCategory(String title) {
+        if (this.title == title) {
+            return this.category;
+        }
+        return null;
     }
 }
