@@ -15,4 +15,8 @@ public class Statistics {
                 .max(Comparator.comparingInt(Category::getSum));
         category.ifPresent(value -> maxCategory = value);
     }
+
+    public Category getMaxCategory() {
+        return maxCategory;
+    }
 }

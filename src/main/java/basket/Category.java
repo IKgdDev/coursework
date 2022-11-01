@@ -16,4 +16,8 @@ public class Category {
     public int getSum(){
         return this.sum;
     }
+
+    public String getCategory() {
+        return category;
+    }
 }
