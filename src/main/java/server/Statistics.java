@@ -1,6 +1,6 @@
-package Server;
+package server;
 
-import Basket.Category;
+import basket.Category;
 
 import java.util.Comparator;
 import java.util.List;

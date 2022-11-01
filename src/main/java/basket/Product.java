@@ -1,4 +1,4 @@
-package Basket;
+package basket;
 
 public class Product {
     private String title;
@@ -19,10 +19,7 @@ public class Product {
         return category;
     }
 
-    public String getCategory(String title) {
-        if (this.title.equals(title)) {
-            return this.category;
-        }
-        return null;
+    public String getTitle() {
+        return title;
     }
 }

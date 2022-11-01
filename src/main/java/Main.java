@@ -1,7 +1,7 @@
-import Basket.Category;
-import Basket.Product;
-import Server.Request;
-import Server.Statistics;
+import basket.Category;
+import basket.Product;
+import server.Request;
+import server.Statistics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
@@ -10,7 +10,6 @@ import com.opencsv.bean.CsvToBeanBuilder;
 
 import java.io.*;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,16 +27,19 @@ public class Main {
             products = csv.parse();
         }
 
-        Map<String, Category> basket = new HashMap<>();
-        basket.put("другое", new Category("другое", 0));
+        Map<String, Category> categories = new HashMap<>();
+        categories.put("другое", new Category("другое", 0));
         for (Product product : products) {
             String category = product.getCategory();
-            if (!basket.containsKey(category)) {
-                basket.put(category, new Category(category, 0));
+            if (!categories.containsKey(category)) {
+                categories.put(category, new Category(category, 0));
             }
         }
 
         Statistics statistics = new Statistics();
+
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
 
         try (ServerSocket serverSocket = new ServerSocket(8989)) {
             while (true) {
@@ -46,22 +48,20 @@ public class Main {
                         BufferedReader in = new BufferedReader(new FileReader("request.json"));
                         PrintWriter out = new PrintWriter("reply.json")
                 ) {
-                    GsonBuilder builder = new GsonBuilder();
-                    Gson gson = builder.create();
                     Request request = gson.fromJson(in.readLine(), Request.class);
 
-                    String strCategory = "другое";
+                    String requestCategory = "другое";
 
                     for (Product product : products) {
-                        String category = product.getCategory(request.getTitle());
-                        if (category != null){
-                            strCategory = category;
+                        if (product.getTitle().equals(request.getTitle())){
+                            requestCategory = product.getCategory();
                             break;
                         }
                     }
 
-                    basket.get(strCategory).addSum(request.getSum());
-                    statistics.setMaxCategory(new ArrayList<>(basket.values()));
+                    categories.get(requestCategory).addSum(request.getSum());
+
+                    statistics.setMaxCategory(new ArrayList<>(categories.values()));
 
                     out.write(gson.toJson(statistics));
                 }

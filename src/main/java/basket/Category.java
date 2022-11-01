@@ -1,4 +1,4 @@
-package Basket;
+package basket;
 
 public class Category {
     private String category;
