@@ -8,4 +8,12 @@ public class Category {
         this.category = category;
         this.sum = sum;
     }
+
+    public void addSum(int value){
+        sum += value;
+    }
+
+    public int getSum(){
+        return this.sum;
+    }
 }

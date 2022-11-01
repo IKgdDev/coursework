@@ -20,7 +20,7 @@ public class Product {
     }
 
     public String getCategory(String title) {
-        if (this.title == title) {
+        if (this.title.equals(title)) {
             return this.category;
         }
         return null;
