@@ -1,11 +1,16 @@
 package server;
 
+import com.google.gson.annotations.Expose;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Request {
+    @Expose
     private String title;
+    @Expose
     private String date;
+    @Expose
     private int sum;
 
     public String getTitle() {

@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
 
         List<Product> products;
         try (FileReader reader = new FileReader("categories.tsv")) {
@@ -27,43 +27,62 @@ public class Main {
             products = csv.parse();
         }
 
-        Map<String, Category> categories = new HashMap<>();
-        categories.put("другое", new Category("другое", 0));
-        for (Product product : products) {
-            String category = product.getCategory();
-            if (!categories.containsKey(category)) {
-                categories.put(category, new Category(category, 0));
+        File dataFile = new File("data.bin");
+
+        Statistics statistics = null;
+
+        if (dataFile.exists()) {
+            try (FileInputStream fis = new FileInputStream(dataFile);
+                 ObjectInputStream ois = new ObjectInputStream(fis)) {
+                statistics = (Statistics) ois.readObject();
             }
+        } else {
+            Map<String, Category> categories = new HashMap<>();
+            categories.put("другое", new Category("другое", 0));
+            for (Product product : products) {
+                String category = product.getCategory();
+                if (!categories.containsKey(category)) {
+                    categories.put(category, new Category(category, 0));
+                }
+            }
+            statistics = new Statistics(categories);
         }
 
-        Statistics statistics = new Statistics();
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .create();
 
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
 
         try (ServerSocket serverSocket = new ServerSocket(8989)) {
             while (true) {
+                System.out.println();
                 try (
                         //Socket socket = serverSocket.accept();
                         BufferedReader in = new BufferedReader(new FileReader("request.json"));
-                        PrintWriter out = new PrintWriter("reply.json")
+                        PrintWriter out = new PrintWriter("reply.json");
+                        FileOutputStream fos = new FileOutputStream(dataFile);
+                        ObjectOutputStream oos = new ObjectOutputStream(fos)
                 ) {
                     Request request = gson.fromJson(in.readLine(), Request.class);
 
                     String requestCategory = "другое";
 
                     for (Product product : products) {
-                        if (product.getTitle().equals(request.getTitle())){
+                        if (product.getTitle().equals(request.getTitle())) {
                             requestCategory = product.getCategory();
                             break;
                         }
                     }
 
-                    categories.get(requestCategory).addSum(request.getSum());
+                    statistics.getCategories().get(requestCategory).addSum(request.getSum());
 
-                    statistics.setMaxCategory(new ArrayList<>(categories.values()));
+                    statistics.setMaxCategory();
 
                     out.write(gson.toJson(statistics));
+
+                    oos.writeObject(statistics);
+
+                    break;
                 }
             }
         } catch (IOException e) {

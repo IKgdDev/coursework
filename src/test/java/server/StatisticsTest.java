@@ -2,7 +2,6 @@ package server;
 
 import basket.Category;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class StatisticsTest {
 
@@ -27,7 +25,8 @@ class StatisticsTest {
     @ParameterizedTest
     @MethodSource("getArguments")
     void setMaxCategory(List<Category> categoryList, Category expected) {
-        statistics.setMaxCategory(categoryList);
+        statistics.setCategories(categoryList);
+        statistics.setMaxCategory();
         Assertions.assertEquals(expected.getCategory(), statistics.getMaxCategory().getCategory());
         Assertions.assertEquals(expected.getSum(), statistics.getMaxCategory().getSum());
     }
