@@ -1,7 +1,13 @@
 package basket;
 
-public class Category {
+import com.google.gson.annotations.Expose;
+
+import java.io.Serializable;
+
+public class Category implements Serializable {
+    @Expose
     private String category;
+    @Expose
     private int sum;
 
     public Category(String category, int sum) {
