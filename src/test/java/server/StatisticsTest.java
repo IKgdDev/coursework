@@ -25,7 +25,7 @@ class StatisticsTest {
     @ParameterizedTest
     @MethodSource("getArguments")
     void setMaxCategory(List<Category> categoryList, Category expected) {
-        statistics.setCategories(categoryList);
+        statistics.setCategoriesFromList(categoryList);
         statistics.setMaxCategory();
         Assertions.assertEquals(expected.getCategory(), statistics.getMaxCategory().getCategory());
         Assertions.assertEquals(expected.getSum(), statistics.getMaxCategory().getSum());
