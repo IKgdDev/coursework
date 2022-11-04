@@ -1,6 +1,4 @@
 /.idea
 /target
 .DS_Store
-reply.json
-request.json
 data.bin
