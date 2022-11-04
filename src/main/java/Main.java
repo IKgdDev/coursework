@@ -10,6 +10,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
 
 import java.io.*;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,9 +50,9 @@ public class Main {
         try (ServerSocket serverSocket = new ServerSocket(8989)) {
             while (true) {
                 try (
-                        //Socket socket = serverSocket.accept();
-                        BufferedReader in = new BufferedReader(new FileReader("request.json"));
-                        PrintWriter out = new PrintWriter("reply.json");
+                        Socket socket = serverSocket.accept();
+                        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                         FileOutputStream fos = new FileOutputStream(dataFile);
                         ObjectOutputStream oos = new ObjectOutputStream(fos)
                 ) {
@@ -80,8 +81,6 @@ public class Main {
                     out.write(gson.toJson(statistics));
 
                     oos.writeObject(statistics);
-
-                    break;
                 }
             }
         } catch (IOException e) {
