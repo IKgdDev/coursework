@@ -2,9 +2,6 @@ package server;
 
 import com.google.gson.annotations.Expose;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 public class Request {
     @Expose
     private String title;
@@ -17,9 +14,8 @@ public class Request {
         return title;
     }
 
-    public LocalDateTime getDate() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-        return LocalDateTime.parse(this.date, formatter);
+    public String getDate() {
+        return date;
     }
 
     public int getSum() {

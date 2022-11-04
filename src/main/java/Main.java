@@ -10,7 +10,6 @@ import com.opencsv.bean.CsvToBeanBuilder;
 
 import java.io.*;
 import java.net.ServerSocket;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,10 +19,7 @@ public class Main {
 
         List<Product> products;
         try (FileReader reader = new FileReader("categories.tsv")) {
-            CsvToBean<Product> csv = new CsvToBeanBuilder<Product>(reader)
-                    .withSeparator('\t')
-                    .withMappingStrategy(getStrategy())
-                    .build();
+            CsvToBean<Product> csv = new CsvToBeanBuilder<Product>(reader).withSeparator('\t').withMappingStrategy(getStrategy()).build();
             products = csv.parse();
         }
 
@@ -32,8 +28,7 @@ public class Main {
         Statistics statistics = null;
 
         if (dataFile.exists()) {
-            try (FileInputStream fis = new FileInputStream(dataFile);
-                 ObjectInputStream ois = new ObjectInputStream(fis)) {
+            try (FileInputStream fis = new FileInputStream(dataFile); ObjectInputStream ois = new ObjectInputStream(fis)) {
                 statistics = (Statistics) ois.readObject();
             }
         } else {
@@ -48,14 +43,11 @@ public class Main {
             statistics = new Statistics(categories);
         }
 
-        Gson gson = new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()
-                .create();
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
 
         try (ServerSocket serverSocket = new ServerSocket(8989)) {
             while (true) {
-                System.out.println();
                 try (
                         //Socket socket = serverSocket.accept();
                         BufferedReader in = new BufferedReader(new FileReader("request.json"));
@@ -63,6 +55,7 @@ public class Main {
                         FileOutputStream fos = new FileOutputStream(dataFile);
                         ObjectOutputStream oos = new ObjectOutputStream(fos)
                 ) {
+
                     Request request = gson.fromJson(in.readLine(), Request.class);
 
                     String requestCategory = "другое";
@@ -74,9 +67,15 @@ public class Main {
                         }
                     }
 
-                    statistics.getCategories().get(requestCategory).addSum(request.getSum());
+                    statistics.getCategories().get(requestCategory).addSum(request.getDate(), request.getSum());
 
                     statistics.setMaxCategory();
+
+                    statistics.setMaxYearCategory(request.getDate());
+
+                    statistics.setMaxMonthCategory(request.getDate());
+
+                    statistics.setMaxDayCategory(request.getDate());
 
                     out.write(gson.toJson(statistics));
 
@@ -92,8 +91,7 @@ public class Main {
     }
 
     private static ColumnPositionMappingStrategy<Product> getStrategy() {
-        ColumnPositionMappingStrategy<Product> strategy =
-                new ColumnPositionMappingStrategy<>();
+        ColumnPositionMappingStrategy<Product> strategy = new ColumnPositionMappingStrategy<>();
         strategy.setType(Product.class);
         strategy.setColumnMapping("title", "category");
         return strategy;
